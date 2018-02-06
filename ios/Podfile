@@ -1,0 +1,36 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'wg' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+
+  # Pods for wg
+  pod ‘Firebase/Core’
+  pod ‘Firebase/Firestore’
+  pod ‘Firebase/Auth’
+
+  target 'wg-tvOSTests' do
+    inherit! :search_paths
+    # Pods for testing
+
+
+    pod 'react-native-config', :path => '../node_modules/react-native-config'
+
+    pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
+  end
+
+  target 'wgTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+end
+
+target 'wg-tvOS' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+
+  # Pods for wg-tvOS
+end
