@@ -1,3 +1,9 @@
+/*
+
+A recommendations test to find data on users' tastes
+
+*/
+
 import React, { Component } from "react";
 import {
   View,
@@ -11,7 +17,7 @@ import firebase from "react-native-firebase";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ReactNativeHaptic from "react-native-haptic";
 
-import SwipeCards from "react-native-swipe-cards";
+import SwipeCards from "react-native-swipe-cards"; // Library to create Tinder-like swipe cards
 
 import RecommendCard from "./RecommendCard";
 
@@ -23,8 +29,8 @@ export default class RecommendationsTest extends Component {
       tastes: this.props.userInfo.tastes === null
         ? ""
         : this.props.userInfo.tastes,
-      opacity: new Animated.Value(1),
-      percentageText: new Animated.Value(0)
+      opacity: new Animated.Value(1), // Value to change opacity of instructions
+      percentageText: new Animated.Value(0) // Value to change opacity of percentage
     };
 
     this.letterCounter = this.letterCounter.bind(this);
@@ -32,6 +38,10 @@ export default class RecommendationsTest extends Component {
   }
 
   componentDidMount() {
+    /*
+    Fetch Recommendations collection from Firestore database
+    Record Recommendations data as recs variable
+    */
     const array = [];
     firebase.firestore().collection("recommendations").get().then(snapShot => {
       snapShot.forEach(doc => {
@@ -48,34 +58,41 @@ export default class RecommendationsTest extends Component {
     });
 
     Animated.timing(this.state.opacity, {
+      // Change opacity of instructions
       toValue: 0,
-      delay: 2000,
+      delay: 4000,
       duration: 2000
     }).start();
 
     Animated.timing(this.state.percentageText, {
+      // Change opacity of percentage
       toValue: 1,
-      delay: 4000,
+      delay: 6000,
       duration: 2000
     }).start();
   }
 
   letterCounter(str) {
-    var letters = 0;
-    var alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ10";
-    var ar = alphabet.split("");
+    // Function to count number of characters in a user tastes string
+    var letters = 0; // Letters count
+    var alphabet = "10"; // Letters to count for
+    var ar = alphabet.split(""); // Get array of all characters in word
     for (var i = 0; i < str.length; i++) {
+      // Loop through ar array
       if (ar.indexOf(str[i]) > -1) {
-        letters = letters + 1;
+        // If each character is in alphabet string
+        letters = letters + 1; // Add to letter count
       }
     }
     return letters;
   }
 
   saveData() {
+    // Save and update user tastes
     firebase.firestore().doc(`users/${this.props.user.uid}`).update({
       tastes: this.state.tastes
     });
+    this.props.userInfo.tastes = this.state.tastes;
   }
 
   render() {
@@ -160,7 +177,7 @@ export default class RecommendationsTest extends Component {
 }
 
 RecommendationsTest.propTypes = {
-  user: PropTypes.object.isRequired,
-  userInfo: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired
+  user: PropTypes.object.isRequired, // User object storing Firebase info
+  userInfo: PropTypes.object.isRequired, // Object storing a user's first name, last name, and tastes
+  close: PropTypes.func.isRequired // Function to close class
 };

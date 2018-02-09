@@ -1,3 +1,9 @@
+/*
+
+A view listing all books in a genre
+
+*/
+
 import React, { Component } from "react";
 import {
   View,
@@ -18,13 +24,14 @@ export default class BigGenre extends Component {
     super(props);
 
     this.state = {
-      bigBook: false
+      bigBook: false // Record whether book is enlarged
     };
 
     this.biggerBook = this.biggerBook.bind(this);
   }
 
   biggerBook(book) {
+    // Function to enlarge book on tap
     this.setState({
       bigBook: !this.state.bigBook,
       pickedBook: book
@@ -84,12 +91,12 @@ export default class BigGenre extends Component {
 }
 
 BigGenre.propTypes = {
-  books: PropTypes.array.isRequired,
-  genre: PropTypes.string.isRequired,
-  user: PropTypes.object.isRequired,
-  userInfo: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired,
-  userHistory: PropTypes.array.isRequired
+  books: PropTypes.array.isRequired, // Array of books pre-filtered by specified genre
+  genre: PropTypes.string.isRequired, // Specified genre
+  user: PropTypes.object.isRequired, // Object containing user's Firestore information
+  userInfo: PropTypes.object.isRequired, // Object containing user's first name, last name, and tastes
+  close: PropTypes.func.isRequired, // Function to close BigGenre on MainView
+  userHistory: PropTypes.array.isRequired // Array containing user's book history
 };
 
 const MainText = styled.Text`

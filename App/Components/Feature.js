@@ -1,3 +1,9 @@
+/*
+
+A "Book of the Day" slide to feature books on the Home Screen.
+
+*/
+
 import React, { Component } from "react";
 import { View, Text, Image, Dimensions, TouchableOpacity } from "react-native";
 import PropTypes from "prop-types";
@@ -6,8 +12,6 @@ export default class Feature extends Component {
   constructor(props) {
     super(props);
   }
-
-  componentDidMount() {}
 
   render() {
     return (
@@ -78,22 +82,7 @@ export default class Feature extends Component {
   }
 }
 
-/* <Image
-  source={{ uri: this.props.books[0].cover }}
-  style={{
-    width: 100,
-    height: 160,
-    borderColor: "white",
-    borderWidth: 3,
-    borderRadius: 8,
-    overflow: "hidden",
-    position: "absolute",
-    bottom: 10,
-    right: 10
-  }}
-/> */
-
 Feature.propTypes = {
-  books: PropTypes.array.isRequired,
-  biggerBook: PropTypes.func.isRequired
+  books: PropTypes.array.isRequired, // Filtered array for books with feature image
+  biggerBook: PropTypes.func.isRequired // Function to enlarge book
 };

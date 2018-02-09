@@ -1,3 +1,9 @@
+/*
+
+A button to display a cover and enlarge books on press.
+
+*/
+
 import React, { Component } from "react";
 import { View, Image, Text, Dimensions, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
@@ -12,8 +18,9 @@ export default class Book extends Component {
   }
 
   tapBook() {
-    ReactNativeHaptic.generate("selection");
-    this.props.bigBook(this.props.book);
+    // Method to respond to touch event
+    ReactNativeHaptic.generate("selection"); // Haptic feedback
+    this.props.bigBook(this.props.book); // Enlarge books using function from parent
   }
 
   render() {
@@ -34,6 +41,6 @@ export default class Book extends Component {
 }
 
 Book.propTypes = {
-  book: PropTypes.object.isRequired,
-  bigBook: PropTypes.func.isRequired
+  book: PropTypes.object.isRequired, // Book object carrying book information data
+  bigBook: PropTypes.func.isRequired // Function to enlarge book
 };

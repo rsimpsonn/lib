@@ -1,3 +1,9 @@
+/*
+
+An enlarged Book view with book information and a book reservation system
+
+*/
+
 import React, { Component } from "react";
 import {
   View,
@@ -24,74 +30,85 @@ export default class BigBook extends Component {
     super(props);
 
     this.state = {
-      seeMore: false,
+      seeMore: false, // Boolean to enlarge book description
       seeMoreText: "See more",
-      offset: new Animated.Value(Dimensions.get("window").height * 0.3),
-      review: false
+      review: false // Boolean to enlarge review popup
     };
 
     this.reserveBook = this.reserveBook.bind(this);
     this.checkOutBook = this.checkOutBook.bind(this);
     this.returnBook = this.returnBook.bind(this);
     this.checkStatus = this.checkStatus.bind(this);
-    this.handleScroll = this.handleScroll.bind(this);
   }
 
   componentDidMount() {
+    // Sort the book's status (array of book's past reservations, checkouts, and returns) from most recent to oldest status
     this.props.book.status.sort(function(a, b) {
       return (
-        moment(b.at, "MMMM Do, h:mm:ss a") - moment(a.at, "MMMM Do, h:mm:ss a")
+        moment(b.at, "MMMM Do, h:mm:ss a") - moment(a.at, "MMMM Do, h:mm:ss a") // Use momentJS library to compare dates
       );
     });
     this.checkStatus();
   }
 
   checkStatus() {
-    const lastStatus = this.props.book.status[0];
+    // Get last status and alter state accordingly
+    const lastStatus = this.props.book.status[0]; // Most recent status on book
     if (lastStatus === undefined || lastStatus.status === "Returned") {
+      // If last status does not exist or is Returned
       this.setState({
-        available: true,
+        available: true, // Book is available to reserve
         status: "Reserve"
       });
     } else if (lastStatus.status === "Reserved") {
+      // If last status is Reserved
       if (moment() > moment(lastStatus.dueAt, "MMMM Do, h:mm a")) {
+        // If reservation is expired
         this.setState({
           available: true,
           status: "Reserve"
         });
       } else {
+        // If the reservation is not expired
         if (lastStatus.by === this.props.user.uid) {
+          // If current user owns reservation
           this.setState({
             available: false,
             status: "Your reservation expires on",
-            ownedByThisUser: true
+            ownedByThisUser: true // Let user check out the book
           });
         } else {
+          // If current user does not own reservation
           this.setState({
             available: false,
             status: `Reserved by ${lastStatus.name}`,
-            ownedByThisUser: false
+            ownedByThisUser: false // Current user cannot check out the book
           });
         }
       }
     } else if (lastStatus.status === "Checked Out") {
+      // If last status is Checked Out
       if (moment() > moment(lastStatus.dueAt, "MMMM Do, h:mm a")) {
+        // If last Check Out is expired
         this.setState({
           available: true,
           status: "Reserve"
         });
       } else {
+        // If last Check Out is not expired
         if (lastStatus.by === this.props.user.uid) {
+          // If current user checked out the book
           this.setState({
             available: false,
             status: "Your book is due on",
-            ownedByThisUser: true
+            ownedByThisUser: true // Let user return the book
           });
         } else {
+          // If current user did not check out the book
           this.setState({
             available: false,
             status: `Owned by ${lastStatus.name}`,
-            ownedByThisUser: false
+            ownedByThisUser: false // Do not let user return the book
           });
         }
       }
@@ -99,32 +116,36 @@ export default class BigBook extends Component {
   }
 
   reserveBook() {
-    ReactNativeHaptic.generate("impact");
+    // Respond to button tap to reserve the book
+    ReactNativeHaptic.generate("impact"); // Haptic feedback
     firebase.firestore().collection(`books/${this.props.book.key}/status`).add({
+      // Add new status document to collection of book's status updates
       status: "Reserved",
       by: this.props.user.uid,
       name: this.props.userInfo.firstName + " " + this.props.userInfo.lastName,
-      dueAt: moment().add(7, "days").format("MMMM Do, h:mm a"),
+      dueAt: moment().add(7, "days").format("MMMM Do, h:mm a"), // Reservation lasts for a week
       at: moment().format("MMMM Do, h:mm:ss a")
     });
 
-    firebase
+    firebase // add book to user's history in database
       .firestore()
       .collection(`users/${this.props.user.uid}/history`)
       .doc(this.props.book.key)
       .set({
         status: 1,
         dueAt: moment().add(7, "days").format("MMMM Do, h:mm a"),
-        book: this.props.book
+        book: this.props.book.key
       });
 
     this.props.userHistory.push({
+      // add book to user's history locally
       status: 1,
       dueAt: moment().add(7, "days").format("MMMM Do, h:mm a"),
-      book: this.props.book
+      book: this.props.book.key
     });
 
     this.props.book.status.splice(0, 0, {
+      // add reservation to book's status locally
       status: "Reserved",
       by: this.props.user.uid,
       name: this.props.userInfo.firstName + " " + this.props.userInfo.lastName,
@@ -136,16 +157,18 @@ export default class BigBook extends Component {
   }
 
   checkOutBook() {
-    ReactNativeHaptic.generate("impact");
+    // Respond to button tap to check out book
+    ReactNativeHaptic.generate("impact"); // Haptic feedback
     firebase.firestore().collection(`books/${this.props.book.key}/status`).add({
+      // Add new document to book's status collection
       status: "Checked Out",
       by: this.props.user.uid,
       name: this.props.userInfo.firstName + " " + this.props.userInfo.lastName,
-      dueAt: moment().add(1, "months").format("MMMM Do, h:mm a"),
+      dueAt: moment().add(1, "months").format("MMMM Do, h:mm a"), // book check out lasts for a month
       at: moment().format("MMMM Do, h:mm:ss a")
     });
 
-    firebase
+    firebase // Update book document in user's history
       .firestore()
       .doc(`users/${this.props.user.uid}/history/${this.props.book.key}`)
       .update({
@@ -154,6 +177,7 @@ export default class BigBook extends Component {
       });
 
     this.props.book.status.splice(0, 0, {
+      // Update book's status locally
       status: "Checked Out",
       by: this.props.user.uid,
       name: this.props.userInfo.firstName + " " + this.props.userInfo.lastName,
@@ -165,15 +189,17 @@ export default class BigBook extends Component {
   }
 
   returnBook() {
-    ReactNativeHaptic.generate("selection");
+    // Respond to button tap to return book
+    ReactNativeHaptic.generate("selection"); // Haptic feedback
     firebase.firestore().collection(`books/${this.props.book.key}/status`).add({
+      // Update book status in database
       status: "Returned",
       by: this.props.user.uid,
       name: this.props.userInfo.firstName + " " + this.props.userInfo.lastName,
       at: moment().format("MMMM Do, h:mm:ss a")
     });
 
-    firebase
+    firebase // Update user's history
       .firestore()
       .doc(`users/${this.props.user.uid}/history/${this.props.book.key}`)
       .update({
@@ -182,6 +208,7 @@ export default class BigBook extends Component {
       });
 
     this.props.book.status.splice(0, 0, {
+      // Update book's status locally
       status: "Returned",
       by: this.props.user.uid,
       name: this.props.userInfo.firstName + " " + this.props.userInfo.lastName,
@@ -192,12 +219,6 @@ export default class BigBook extends Component {
     });
     this.checkStatus();
   }
-
-  handleScroll = function(event) {
-    this.setState({
-      offset: event.nativeEvent.contentOffset.y
-    });
-  };
 
   render() {
     return (
@@ -466,42 +487,6 @@ export default class BigBook extends Component {
   }
 }
 
-/*<Image
-  style={{
-    width: Dimensions.get("window").width * 0.4,
-    height: Dimensions.get("window").width * 0.6,
-    borderRadius: 8,
-    overflow: "hidden"
-  }}
-  source={{ uri: this.props.book.cover }}
-/>*/
-
-/* {this.state.seeMore &&
-  <View>
-    <AuthorText
-      style={{
-        marginTop: 10,
-        color: "#CFCFCF",
-        fontSize: 14,
-        fontFamily: "Avenir-Black"
-      }}
-    >
-      {this.props.book.pages} pages
-    </AuthorText>
-    <AuthorText
-      style={{
-        marginTop: 10,
-        color: "#CFCFCF",
-        fontSize: 14,
-        fontFamily: "Avenir-Black"
-      }}
-    >
-      Released in {this.props.book.year}
-    </AuthorText>
-  </View>} */
-
-//<BookInfo book={this.props.book} />
-
 const TitleText = styled.Text`
   fontFamily: Avenir-Black;
   fontSize: 28;
@@ -514,9 +499,9 @@ const AuthorText = styled.Text`
 `;
 
 BigBook.propTypes = {
-  book: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
-  userInfo: PropTypes.object.isRequired,
-  userHistory: PropTypes.array.isRequired
+  book: PropTypes.object.isRequired, // Object containing book information
+  close: PropTypes.func.isRequired, // Function to close BigBook
+  user: PropTypes.object.isRequired, // Object storing user Firestore information
+  userInfo: PropTypes.object.isRequired, // Object storing first name, last name, and tastes
+  userHistory: PropTypes.array.isRequired // Array storing user book history
 };

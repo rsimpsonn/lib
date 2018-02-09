@@ -1,3 +1,11 @@
+/*
+
+Main Screen of the app to manage navigation and display Home Screen, Search Screen, Profile Screen, or Enlarged Books/Genres
+Enters on Home Screen
+
+
+*/
+
 import React, { Component } from "react";
 import {
   ScrollView,
@@ -29,13 +37,13 @@ export default class MainView extends Component {
   constructor(props) {
     super(props);
 
-    this.booksRef = firebase.firestore().collection("books");
+    this.booksRef = firebase.firestore().collection("books"); // Collection reference to all book information
     this.state = {
-      bigGenre: false,
-      search: false,
-      bigBook: false,
-      profile: false,
-      recommendations: false
+      bigGenre: false, // Records whether BigGenre is enlarged
+      search: false, // Records whether Search is enlarged
+      bigBook: false, // Records whether BigBook is enlarged
+      profile: false, // Records whether Profile is enlarged
+      recommendations: false // Records whether RecommendationsTest is enlarged
     };
 
     this.unsubscribe = null;
@@ -43,15 +51,16 @@ export default class MainView extends Component {
     this.biggerGenre = this.biggerGenre.bind(this);
     this.biggerBook = this.biggerBook.bind(this);
     this.onCollectionUpdate = this.onCollectionUpdate.bind(this);
-    this.search = this.search.bind(this);
+    this.navigation = this.navigation.bind(this);
     this.enlargeRecs = this.enlargeRecs.bind(this);
   }
 
   componentDidMount() {
-    this.unsubscribe = this.booksRef.onSnapshot(this.onCollectionUpdate);
+    this.unsubscribe = this.booksRef.onSnapshot(this.onCollectionUpdate); // Get realtime updates to changes in book data
   }
 
   onCollectionUpdate = querySnapshot => {
+    // Store all book information
     const array = [];
 
     querySnapshot.forEach(book => {
@@ -74,20 +83,20 @@ export default class MainView extends Component {
           })
         );
       array.push({
-        key: book.id,
-        author: data.author,
-        title: data.title,
-        year: data.year,
-        rating: data.rating,
+        key: book.id, // book UID for getting data from database
+        author: data.author, // author
+        title: data.title, // title
+        year: data.year, // year published
+        rating: data.rating, // rating (1-5)
         checkedOut: data.checkedOut,
-        cover: data.image,
-        pages: data.pages,
-        header: data.header !== undefined ? data.header : null,
-        feature: data.feature !== undefined ? data.feature : null,
-        description: data.description,
-        genres: data.genres,
-        status: statusArray,
-        location: data.location
+        cover: data.image, // link to book cover image
+        pages: data.pages, // page count
+        header: data.header !== undefined ? data.header : null, // header for BigBook
+        feature: data.feature !== undefined ? data.feature : null, // Feature for Feature or ForYou
+        description: data.description, // book synopsis
+        genres: data.genres, // array of book genres
+        status: statusArray, // history of book statuses
+        location: data.location // location of book in library
       });
     });
     this.setState({
@@ -96,6 +105,7 @@ export default class MainView extends Component {
   };
 
   biggerGenre(genre) {
+    // Enlarge BigGenre
     this.setState({
       bigGenre: !this.state.bigGenre,
       pickedGenre: genre
@@ -103,7 +113,8 @@ export default class MainView extends Component {
   }
 
   biggerBook(book) {
-    ReactNativeHaptic.generate("selection");
+    // Enlarge BigBook
+    ReactNativeHaptic.generate("selection"); // Haptic feedback
     this.setState({
       bigBook: !this.state.bigBook,
       pickedBook: book
@@ -111,13 +122,16 @@ export default class MainView extends Component {
   }
 
   enlargeRecs() {
+    // Enlarge RecommendationsTest
     this.setState({
       recommendations: !this.state.recommendations
     });
   }
 
-  search(number) {
+  navigation(number) {
+    // Navigate to different screens using data from TabBar
     if (number === 1) {
+      // Go to Search screen
       this.setState({
         bigGenre: false,
         search: true,
@@ -125,11 +139,13 @@ export default class MainView extends Component {
         bigBook: false
       });
     } else if (number === 2) {
+      // Go to Home screen
       this.setState({
         search: false,
         profile: false
       });
     } else {
+      // Go to Profile Screen
       this.setState({
         profile: true,
         search: false,
@@ -137,6 +153,11 @@ export default class MainView extends Component {
         bigBook: false
       });
     }
+  }
+
+  componentWillUnmount() {
+    // Unsubscribe from book data updates
+    this.unsubscribe();
   }
 
   render() {
@@ -182,7 +203,7 @@ export default class MainView extends Component {
               </ScrollView>}
           </ScrollView>}
         {this.state.bigGenre &&
-          <View>
+          <View style={{ flex: 1 }}>
             <BigGenre
               books={this.state.books.filter(
                 book => book.genres.indexOf(this.state.pickedGenre) !== -1
@@ -226,7 +247,7 @@ export default class MainView extends Component {
           />}
         <TabBar
           style={{ position: "absolute", bottom: 0 }}
-          navigation={{ search: this.search }}
+          navigation={this.navigation}
         />
       </View>
     );
@@ -248,8 +269,7 @@ const BigText = styled.Text`
 `;
 
 MainView.propTypes = {
-  user: PropTypes.object.isRequired,
-  userInfo: PropTypes.object.isRequired,
-  userHistory: PropTypes.array.isRequired,
-  navigation: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired, // Object containing user Firestore data
+  userInfo: PropTypes.object.isRequired, // Object containing user's first name, last name, and tastes
+  userHistory: PropTypes.array.isRequired // Object containing user's book history
 };

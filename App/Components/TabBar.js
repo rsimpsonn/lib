@@ -1,3 +1,9 @@
+/*
+
+A tab bar component to direct navigation to Search, Home, and Profile
+
+*/
+
 import React, { Component } from "react";
 import { View, Text, Image, Dimensions, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
@@ -9,18 +15,23 @@ export default class TabBar extends Component {
     super(props);
 
     this.state = {
-      selection: 2
+      selection: this.home
     };
+
+    this.search = 1;
+    this.home = 2;
+    this.profile = 3;
 
     this.changeSelection = this.changeSelection.bind(this);
   }
 
   changeSelection(selection) {
+    // Responds to touch event and directs navigation to user selection
     const previousIndex = this.state.selection;
     this.setState({
       selection
     });
-    this.props.navigation.search(selection);
+    this.props.navigation(selection); // Call props function to change screens on MainView
   }
 
   render() {
@@ -36,7 +47,7 @@ export default class TabBar extends Component {
       >
         <TouchableOpacity
           style={{ margin: 20 }}
-          onPress={() => this.changeSelection(1)}
+          onPress={() => this.changeSelection(this.search)}
         >
           <Icon
             name="search"
@@ -46,7 +57,7 @@ export default class TabBar extends Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={{ margin: 20 }}
-          onPress={() => this.changeSelection(2)}
+          onPress={() => this.changeSelection(this.home)}
         >
           <Icon
             name="home"
@@ -56,7 +67,7 @@ export default class TabBar extends Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={{ margin: 20 }}
-          onPress={() => this.changeSelection(3)}
+          onPress={() => this.changeSelection(this.profile)}
         >
           <Icon
             name="user-circle"
@@ -70,5 +81,5 @@ export default class TabBar extends Component {
 }
 
 TabBar.propTypes = {
-  navigation: PropTypes.object.isRequired
+  navigation: PropTypes.func.isRequired // Function to change current screen on parent class MainView
 };

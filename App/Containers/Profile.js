@@ -1,3 +1,9 @@
+/*
+
+A Profile Screen to show and enlarge books the user has reserved, checked out, or returned
+
+*/
+
 import React, { Component } from "react";
 import {
   View,
@@ -20,23 +26,38 @@ export default class Profile extends Component {
     super(props);
 
     this.state = {
-      reservedBooks: this.props.userHistory.filter(book => book.status === 1),
-      checkedOutBooks: this.props.userHistory.filter(book => book.status === 2),
-      returnedBooks: this.props.userHistory.filter(book => book.status === 3),
-      bigBook: false
+      reservedBooks: this.getBooks(1), // Array of book information for books user has reserved
+      checkedOutBooks: this.getBooks(2), // Array of book information for books user has checked out
+      returnedBooks: this.getBooks(3), // Array of book information for books user has returned
+      bigBook: false // Records whether BigBook is enlarged
     };
 
     this.logOut = this.logOut.bind(this);
     this.biggerBook = this.biggerBook.bind(this);
+    this.getBooks = this.getBooks.bind(this);
   }
 
-  componentDidMount() {}
+  getBooks(status) {
+    // Get books depending on book's status
+    const history = this.props.userHistory.filter(
+      // Filter books by status parameter of function
+      book => book.status === status
+    );
+    const books = history.map(
+      // Return book information from books props array, userHistory only records the keys of books
+      book =>
+        this.props.books[this.props.books.findIndex(bk => bk.key === book.book)] // Match by books' keys
+    );
+    return books;
+  }
 
   logOut() {
+    // Log user out
     firebase.auth().signOut();
   }
 
   biggerBook(pickedBook) {
+    // Enlarge BigBook
     this.setState({
       bigBook: !this.state.bigBook,
       pickedBook
@@ -77,21 +98,21 @@ export default class Profile extends Component {
               <StatusText>Your Reservations</StatusText>}
             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
               {this.state.reservedBooks.map(book =>
-                <Book book={book.book} bigBook={this.biggerBook} />
+                <Book book={book} bigBook={this.biggerBook} />
               )}
             </View>
             {this.state.checkedOutBooks.length > 0 &&
               <StatusText>Your Checked Out Books</StatusText>}
             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
               {this.state.checkedOutBooks.map(book =>
-                <Book book={book.book} bigBook={this.biggerBook} />
+                <Book book={book} bigBook={this.biggerBook} />
               )}
             </View>
             {this.state.returnedBooks.length > 0 &&
               <StatusText>Your Returned Books</StatusText>}
             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
               {this.state.returnedBooks.map(book =>
-                <Book book={book.book} bigBook={this.biggerBook} />
+                <Book book={book} bigBook={this.biggerBook} />
               )}
             </View>
           </View>}
@@ -122,8 +143,8 @@ const StatusText = styled.Text`
 `;
 
 Profile.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  userHistory: PropTypes.array.isRequired,
-  user: PropTypes.object.isRequired,
-  books: PropTypes.array.isRequired
+  userInfo: PropTypes.object.isRequired, // Object containing user's first name, last name, and tastes
+  userHistory: PropTypes.array.isRequired, // Array containing user's book history
+  user: PropTypes.object.isRequired, // Object containing user's Firestore information
+  books: PropTypes.array.isRequired // Array of objects containing book information
 };

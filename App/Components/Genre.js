@@ -1,3 +1,9 @@
+/*
+
+A Genre listing slide to enlarge BigGenre objects on the Home Screen
+
+*/
+
 import React, { Component } from "react";
 import { View, Text, Dimensions, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
@@ -12,8 +18,9 @@ export default class Genre extends Component {
   }
 
   genreTap() {
+    // Respond to touch event
     ReactNativeHaptic.generate("selection");
-    this.props.big(this.props.genre.name);
+    this.props.big(this.props.genre.name); // Enlarge BigGenre object on Home Screen
   }
 
   render() {
@@ -49,7 +56,7 @@ const MainText = styled.Text`
 `;
 
 Genre.propTypes = {
-  genre: PropTypes.object.isRequired,
-  big: PropTypes.func.isRequired,
-  color: PropTypes.string.isRequired
+  genre: PropTypes.object.isRequired, // Object containing genre information
+  big: PropTypes.func.isRequired, // Function to enlarge BigGenre
+  color: PropTypes.string.isRequired // Color for theme of Genre
 };

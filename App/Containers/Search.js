@@ -1,3 +1,9 @@
+/*
+
+A Search screen to search for and enlarge books
+
+*/
+
 import React, { Component } from "react";
 import {
   View,
@@ -19,7 +25,7 @@ export default class Search extends Component {
 
     this.state = {
       text: "",
-      bigBook: false
+      bigBook: false // Records whether book is selected
     };
 
     this.optimizeResults = this.optimizeResults.bind(this);
@@ -27,18 +33,20 @@ export default class Search extends Component {
   }
 
   optimizeResults() {
+    // Filter books by search query
     if (this.state.text === "") {
       return;
     }
     return this.props.books
       .filter(
         book =>
-          book.title.toLowerCase().indexOf(this.state.text.toLowerCase()) !== -1
+          book.title.toLowerCase().indexOf(this.state.text.toLowerCase()) !== -1 // Filter books using indexOf with titles
       )
       .map(book => <Book book={book} bigBook={this.pickBook} />);
   }
 
   pickBook(book) {
+    // Select and enlarge BigBook
     this.setState({
       bigBook: !this.state.bigBook,
       pickedBook: book
@@ -96,7 +104,7 @@ const MainText = styled.Text`
 `;
 
 Search.propTypes = {
-  books: PropTypes.array.isRequired,
-  user: PropTypes.object.isRequired,
-  userInfo: PropTypes.object.isRequired
+  books: PropTypes.array.isRequired, // Array of objects containing book information
+  user: PropTypes.object.isRequired, // Object containing user's Firestore information
+  userInfo: PropTypes.object.isRequired // Object containing user's first name, last name, and tastes
 };

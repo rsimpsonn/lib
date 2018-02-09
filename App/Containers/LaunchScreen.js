@@ -1,3 +1,11 @@
+/*
+
+Root View to check if user's logged in
+If logged in, LaunchScreen directs user to MainView
+If not, LaunchScreen shows Login screen
+
+*/
+
 import React, { Component } from "react";
 import {
   ScrollView,
@@ -18,7 +26,7 @@ export default class LaunchScreen extends Component {
     super(props);
 
     this.state = {
-      signUp: false
+      signUp: false // Records whether the user has chosen to sign up
     };
 
     this.login = this.login.bind(this);
@@ -26,27 +34,31 @@ export default class LaunchScreen extends Component {
 
   componentDidMount() {
     this.handle = firebase.auth().onAuthStateChanged(user => {
+      // Check if there's a user already logged in
       if (user !== null && user !== undefined) {
-        this.setState({ user });
+        // If there is
+        this.setState({ user }); // Set user
 
         firebase.firestore().doc(`users/${user.uid}`).get().then(snapShot => {
+          // Get database information for user
           const data = snapShot.data();
           var tastes = null;
           if (data.tastes !== undefined && data.tastes !== null) {
+            // Get tastes if they aren't null or undefined
             tastes = data.tastes;
           }
           this.setState({
             userInfo: {
               firstName: data.firstName,
               lastName: data.lastName,
-              tastes: tastes
+              tastes: tastes // Tastes variable = a string of 1's and 0's showing a user's answers to the RecommendationsTest
             }
           });
         });
 
         firebase
           .firestore()
-          .collection(`users/${user.uid}/history`)
+          .collection(`users/${user.uid}/history`) // Get user's book history
           .get()
           .then(snapShot => {
             const array = [];
@@ -61,6 +73,7 @@ export default class LaunchScreen extends Component {
   }
 
   login() {
+    // Function to login user
     firebase
       .auth()
       .signInWithEmailAndPassword(this.state.email, this.state.password)
@@ -69,6 +82,7 @@ export default class LaunchScreen extends Component {
   }
 
   signUp() {
+    // Function to enlarge Sign Up screen
     this.setState({
       signUp: true
     });

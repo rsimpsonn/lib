@@ -1,3 +1,9 @@
+/*
+
+Map and list Genre objects for Home Screen
+
+*/
+
 import React, { Component } from "react";
 import {
   View,
@@ -19,13 +25,16 @@ export default class GenresList extends Component {
   }
 
   getCount(genre) {
+    // Return the number of the books in a genre
     var count = 0;
     this.props.books.forEach(book => {
+      // Loop through books
       if (book.genres.indexOf(genre) !== -1) {
+        // Find if genre is included in books' arrays of genres
         count++;
       }
     });
-    return count;
+    return count; // Return the number of books with specified genre
   }
 
   render() {
@@ -74,6 +83,6 @@ const MainText = styled.Text`
 `;
 
 GenresList.propTypes = {
-  books: PropTypes.array.isRequired,
-  biggerGenre: PropTypes.func.isRequired
+  books: PropTypes.array.isRequired, // Array of book information
+  biggerGenre: PropTypes.func.isRequired // Function to enlarge BigGenre object on Home Screen
 };

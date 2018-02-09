@@ -1,3 +1,9 @@
+/*
+
+A popup to get a user's review on a returned book
+
+*/
+
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { View, Text, Image, Dimensions, TouchableOpacity } from "react-native";
@@ -12,14 +18,15 @@ export default class ReviewPopup extends Component {
   }
 
   submit() {
+    // Method to save a user's review
     firebase
       .firestore()
       .collection(`books/${this.props.book.key}/goodReviews`)
       .add({
-        tastes: this.props.userInfo.tastes
+        tastes: this.props.userInfo.tastes // Saves user's tastes to compare to others' tastes to recommend book
       });
 
-    this.props.close();
+    this.props.close(); // Close popup
   }
 
   render() {
@@ -110,7 +117,7 @@ export default class ReviewPopup extends Component {
 }
 
 ReviewPopup.propTypes = {
-  book: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired,
-  userInfo: PropTypes.object.isRequired
+  book: PropTypes.object.isRequired, // Object storing book information
+  close: PropTypes.func.isRequired, // Function to close popup
+  userInfo: PropTypes.object.isRequired // Object storing first name, last name, and book tastes
 };

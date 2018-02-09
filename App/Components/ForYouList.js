@@ -1,3 +1,9 @@
+/*
+
+A scroll component to find and list books to recommend to users
+
+*/
+
 import React, { Component } from "react";
 import {
   ScrollView,
@@ -28,6 +34,7 @@ export default class ForYouList extends Component {
   }
 
   componentDidMount() {
+    // Get the reviews of each book from Firebase
     const rankedBooks = [];
     this.props.books.forEach(book => {
       firebase
@@ -40,10 +47,12 @@ export default class ForYouList extends Component {
             const data = doc.data();
             goods.push(data.tastes);
           });
-          rankedBooks.push({ book, score: this.score(goods) });
+          rankedBooks.push({ book, score: this.score(goods) }); // Push each book into RankedBooks library with book information and recommendation score
           if (rankedBooks.length === this.props.books.length) {
+            // Once all reviews are fetched
             this.setState({
               rankedBooks: rankedBooks.sort(function(a, b) {
+                // Sort by highest score
                 return b.score - a.score;
               })
             });
@@ -53,27 +62,38 @@ export default class ForYouList extends Component {
   }
 
   score(goods) {
-    var score = 0;
+    // Goods paramater = array of taste strings from users who have reviewed book
+    /*
+    Each user has a tastes variable in his/her userInfo object.
+    The variable's made up of 1's and 0's depending on his/her answers from the RecommendationsTest
+
+    This method compares the user's tastes to those of users who have reviewed a book.
+    It returns an integer from 1-100 to quantify how highly we recommend the book to the user
+    */
+    var score = 0; // Record score
     const complete = 1 / this.letterCounter(this.props.userInfo.tastes);
+    // Each score is divided into n pieces of size 1/n (n = number of user's answers to recommendations test)
 
     for (i = 0; i < this.letterCounter(this.props.userInfo.tastes); i++) {
-      const isOne = this.props.userInfo.tastes.substring(i, i + 1) === "1";
-      var oneCount = 0;
-      var noCount = 0;
+      // Loop through user's tastes variable
+      const isOne = this.props.userInfo.tastes.substring(i, i + 1) === "1"; // Find if current character in tastes is a 1 or 0
+      var oneCount = 0; // Count to record number of 1's in reviews at current spot i
+      var noCount = 0; // Count to record number of reviews that don't have a value at current spot i
       goods.forEach(good => {
+        // Loop through reviews of book
         if (
           good.substring(i, i + 1) !== undefined &&
           good.substring(i, i + 1) === "1"
         ) {
-          oneCount++;
+          oneCount++; // If both characters are 1's in the same spot i, add one to the oneCount
         } else if (good.substring(i, i + 1) === undefined) {
           noCount++;
         }
       });
       if (isOne) {
-        score += complete * (oneCount / (goods.length - noCount));
+        score += complete * (oneCount / (goods.length - noCount)); // If user's value at spot i is 1, add portion of complete value depending on the count of 1's in spot i
       } else {
-        score += complete * (1 - oneCount / (goods.length - noCount));
+        score += complete * (1 - oneCount / (goods.length - noCount)); // If user's value at spot i is 0, add (1 - portion) of complete value depending on the count of 1's in spot i
       }
     }
 
@@ -81,29 +101,38 @@ export default class ForYouList extends Component {
   }
 
   letterCounter(str) {
-    var letters = 0;
-    var alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ10";
-    var ar = alphabet.split("");
+    // Function to count number of characters in a user tastes string
+    var letters = 0; // Letters count
+    var alphabet = "10"; // Letters to count for
+    var ar = alphabet.split(""); // Get array of all characters in word
     for (var i = 0; i < str.length; i++) {
+      // Loop through ar array
       if (ar.indexOf(str[i]) > -1) {
-        letters = letters + 1;
+        // If each character is in alphabet string
+        letters = letters + 1; // Add to letter count
       }
     }
     return letters;
   }
 
   render() {
-    if (this.state.rankedBooks.length > 0) {
+    var forYou = []; // Array of For You card objects
+    if (
+      this.state.rankedBooks.length > 0 &&
+      this.letterCounter(this.props.userInfo.tastes) > 0
+    ) {
+      // if user tastes string has at least one character
       var forYouCount = 0;
-      var forYou = [];
       this.state.rankedBooks.forEach(book => {
         if (book.score > 60) {
+          // Only recommend if book's score is greater than 60
           forYouCount++;
         }
       });
-      forYouCount = forYouCount > 3 ? 3 : forYouCount;
-      forYouCount = forYouCount === 0 ? 1 : forYouCount;
+      forYouCount = forYouCount > 3 ? 3 : forYouCount; // Don't show more than three
+      forYouCount = forYouCount === 0 ? 1 : forYouCount; // Show at least 1
       for (i = 0; i < forYouCount; i++) {
+        // Loop through For You Books and make array of ForYou components
         forYou.push(
           <ForYou
             biggerBook={this.props.biggerBook}
@@ -196,18 +225,6 @@ export default class ForYouList extends Component {
   }
 }
 
-// {this.props.userInfo.tastes && <ForYou book={this.props.books[0]} />}
-/* <Image
-  source={require("../Images/confetti.png")}
-  style={{
-    width: 220,
-    height: 160,
-    position: "absolute",
-    marginTop: 110,
-    marginLeft: 70
-  }}
-/>*/
-
 const MainText = styled.Text`
   fontFamily: Avenir-Black;
   color: #DCDCDC;
@@ -231,8 +248,8 @@ const AuthorText = styled.Text`
 `;
 
 ForYouList.propTypes = {
-  books: PropTypes.array.isRequired,
-  userInfo: PropTypes.object.isRequired,
-  biggerBook: PropTypes.func.isRequired,
-  enlargeRecs: PropTypes.func.isRequired
+  books: PropTypes.array.isRequired, // Array of book information
+  userInfo: PropTypes.object.isRequired, // Object storing first name, last name, and tastes
+  biggerBook: PropTypes.func.isRequired, // Function to enlarge books on Home Screen
+  enlargeRecs: PropTypes.func.isRequired // Function to enlarge RecommendationsTest
 };

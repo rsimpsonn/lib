@@ -1,3 +1,9 @@
+/*
+
+A Book Page card to swipe through in the RecommendationsTest
+
+*/
+
 import React, { Component } from "react";
 import { View, Text, Dimensions } from "react-native";
 import styled from "styled-components/native";
@@ -48,5 +54,5 @@ export default class RecommendCard extends Component {
 }
 
 RecommendCard.propTypes = {
-  rec: PropTypes.object.isRequired
+  rec: PropTypes.object.isRequired // Object storing recommendation info
 };

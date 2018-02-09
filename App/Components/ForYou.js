@@ -1,3 +1,9 @@
+/*
+
+A "For You" slide to recommend books on the Home Screen.
+
+*/
+
 import React, { Component } from "react";
 import {
   View,
@@ -10,54 +16,23 @@ import {
 import PropTypes from "prop-types";
 import styled from "styled-components/native";
 import ReactNativeHaptic from "react-native-haptic";
-import firebase from "react-native-firebase";
 
 export default class ForYou extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      width: new Animated.Value(Dimensions.get("window").width * 0.92),
-      height: new Animated.Value(Dimensions.get("window").width * 1)
-    };
-
     this.press = this.press.bind(this);
   }
 
   press() {
-    ReactNativeHaptic.generate("selection");
-    const width = [
-      Animated.spring(this.state.width, {
-        toValue: Dimensions.get("window").width * 1,
-        duration: 0.02
-      }),
-      Animated.spring(this.state.width, {
-        toValue: Dimensions.get("window").width * 0.92,
-        duration: 0.02
-      })
-    ];
-
-    const height = [
-      Animated.spring(this.state.height, {
-        toValue: Dimensions.get("window").width * 1.02,
-        duration: 0.02
-      }),
-      Animated.spring(this.state.height, {
-        toValue: Dimensions.get("window").width * 1,
-        duration: 0.02
-      })
-    ];
-
-    Animated.parallel([Animated.sequence(height), Animated.sequence(width)], {
-      duration: 200
-    }).start();
-
-    this.props.biggerBook(this.props.book);
+    // Method to accept touch event
+    ReactNativeHaptic.generate("selection"); // Haptic feedback
+    this.props.biggerBook(this.props.book); // Enlarge book on Home Screen
   }
 
   render() {
     return (
-      <Animated.View
+      <View
         style={{
           margin: 15,
           justifyContent: "center",
@@ -65,10 +40,10 @@ export default class ForYou extends Component {
         }}
       >
         <TouchableOpacity onPress={() => this.press()}>
-          <Animated.Image
+          <Image
             style={{
-              width: this.state.width,
-              height: this.state.height,
+              width: Dimensions.get("window").width * 0.92,
+              height: Dimensions.get("window").width * 1,
               opacity: 1,
               overflow: "hidden",
               borderRadius: 12
@@ -141,7 +116,7 @@ export default class ForYou extends Component {
             {Math.round(this.props.score)}%
           </AuthorText>
         </View>
-      </Animated.View>
+      </View>
     );
   }
 }
@@ -175,8 +150,7 @@ const AuthorText = styled.Text`
 `;
 
 ForYou.propTypes = {
-  book: PropTypes.object.isRequired,
-  biggerBook: PropTypes.func.isRequired,
-  userInfo: PropTypes.object.isRequired,
-  score: PropTypes.number.isRequired
+  book: PropTypes.object.isRequired, // Book object for book information
+  biggerBook: PropTypes.func.isRequired, // Function to enlarge book on Home Screen
+  score: PropTypes.number.isRequired // Recommendation score for user
 };
