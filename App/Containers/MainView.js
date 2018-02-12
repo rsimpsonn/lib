@@ -13,7 +13,8 @@ import {
   Image,
   Dimensions,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  Button
 } from "react-native";
 import styled from "styled-components/native";
 import firebase from "react-native-firebase";
@@ -53,6 +54,7 @@ export default class MainView extends Component {
     this.onCollectionUpdate = this.onCollectionUpdate.bind(this);
     this.navigation = this.navigation.bind(this);
     this.enlargeRecs = this.enlargeRecs.bind(this);
+    this.permissions = this.permissions.bind(this);
   }
 
   componentDidMount() {
@@ -110,6 +112,10 @@ export default class MainView extends Component {
       bigGenre: !this.state.bigGenre,
       pickedGenre: genre
     });
+  }
+
+  permissions() {
+    firebase.messaging().requestPermissions();
   }
 
   biggerBook(book) {
@@ -182,7 +188,9 @@ export default class MainView extends Component {
           >
             {this.props.userInfo &&
               <BigText>Hey, {this.props.userInfo.firstName}!</BigText>}
-            <MainText>Welcome to the library!</MainText>
+            <MainText>
+              Welcome to the library! {this.props.userInfo.pushToken}
+            </MainText>
             {this.state.books &&
               <ScrollView>
                 <GenresList

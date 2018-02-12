@@ -14,7 +14,12 @@ import {
   View,
   TextInput,
   Button,
-  Dimensions
+  Dimensions,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  Animated,
+  Easing
 } from "react-native";
 import firebase from "react-native-firebase";
 
@@ -28,17 +33,40 @@ export default class LaunchScreen extends Component {
     this.state = {
       signUp: false // Records whether the user has chosen to sign up
     };
-
+    this.spinValue = new Animated.Value(0);
+    this.spin = this.spin.bind(this);
     this.login = this.login.bind(this);
+    this.signUpFacebook = this.signUpFacebook.bind(this);
+    this.getPushToken = this.getPushToken.bind(this);
   }
 
   componentDidMount() {
+    this.spin();
+    /*firebase.messaging().createLocalNotification({
+      body: "hey",
+      title: "i love you"
+    });*/
     this.handle = firebase.auth().onAuthStateChanged(user => {
       // Check if there's a user already logged in
       if (user !== null && user !== undefined) {
-        // If there is
+        firebase.messaging().requestPermissions();
+        firebase.messaging().subscribeToTopic("notifications");
+        firebase.messaging().subscribeToTopic(user.uid);
+        firebase.messaging().onMessage(message => {
+          Alert.alert(JSON.stringify(message));
+          firebase.messaging().createLocalNotification({
+            body: message.body,
+            title: message.title
+          });
+        });
+        firebase.messaging().getInitialNotification(message => {
+          Alert.alert(JSON.stringify(message));
+          firebase.messaging().createLocalNotification({
+            body: message.body,
+            title: message.title
+          });
+        });
         this.setState({ user }); // Set user
-
         firebase.firestore().doc(`users/${user.uid}`).get().then(snapShot => {
           // Get database information for user
           const data = snapShot.data();
@@ -51,7 +79,8 @@ export default class LaunchScreen extends Component {
             userInfo: {
               firstName: data.firstName,
               lastName: data.lastName,
-              tastes: tastes // Tastes variable = a string of 1's and 0's showing a user's answers to the RecommendationsTest
+              tastes: tastes, // Tastes variable = a string of 1's and 0's showing a user's answers to the RecommendationsTest
+              pushToken: this.getPushToken(data.pushToken)
             }
           });
         });
@@ -72,12 +101,33 @@ export default class LaunchScreen extends Component {
     });
   }
 
+  spin() {
+    // Function using the Animated API to spin the wheel design
+    this.spinValue.setValue(0);
+    Animated.timing(this.spinValue, {
+      toValue: 1,
+      duration: 40000,
+      easing: Easing.linear
+    }).start(() => this.spin());
+  }
+
+  getPushToken(token) {
+    firebase.messaging().getToken().then(tk => {
+      firebase
+        .firestore()
+        .doc(`users/${this.state.user.uid}`)
+        .update({ pushToken: tk });
+    });
+  }
+
   login() {
     // Function to login user
     firebase
       .auth()
       .signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then(user => this.setState({ user }))
+      .then(user => {
+        this.setState({ user });
+      })
       .catch(error => console.log(error));
   }
 
@@ -88,7 +138,43 @@ export default class LaunchScreen extends Component {
     });
   }
 
+  signUpFacebook = () => {
+    /*
+    return LoginManager.logInWithReadPermissions(["public_profile", "email"])
+      .then(result => {
+        if (!result.isCancelled) {
+          console.log(
+            `Login success with permissions: ${result.grantedPermissions.toString()}`
+          );
+          // get the access token
+          return AccessToken.getCurrentAccessToken();
+        }
+      })
+      .then(data => {
+        if (data) {
+          // create a new firebase credential with the token
+          const credential = firebase.auth.FacebookAuthProvider.credential(
+            data.accessToken
+          );
+          // login with credential
+          return firebase.auth().signInWithCredential(credential);
+        }
+      })
+      .then(currentUser => {
+        if (currentUser) {
+          console.info(JSON.stringify(currentUser.toJSON()));
+        }
+      })
+      .catch(error => {
+        console.log(`Login fail with error: ${error}`);
+      });*/
+  };
+
   render() {
+    const spin = this.spinValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: ["0deg", "360deg"]
+    });
     return (
       <View
         style={{
@@ -101,18 +187,29 @@ export default class LaunchScreen extends Component {
           <View
             style={{
               alignItems: "center",
-              marginTop: Dimensions.get("window").height * 0.4
+              marginTop: Dimensions.get("window").height * 0.15
             }}
           >
-            <Text
+            <View
               style={{
-                fontFamily: "Avenir-Book",
-                fontSize: 28,
-                marginBottom: 20
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 40
               }}
             >
-              Walt Grace
-            </Text>
+              <Animated.Image
+                source={require("../Images/circles.png")}
+                style={{
+                  height: Dimensions.get("window").height * 0.4,
+                  width: Dimensions.get("window").height * 0.4,
+                  transform: [{ rotate: spin }]
+                }}
+              />
+              <Image
+                style={{ position: "absolute", width: 76, height: 46 }}
+                source={require("../Images/logo-abb.png")}
+              />
+            </View>
             <TextInput
               style={{
                 backgroundColor: "#DCDCDC",
@@ -120,7 +217,8 @@ export default class LaunchScreen extends Component {
                 padding: 5,
                 width: Dimensions.get("window").width * 0.6,
                 textAlign: "center",
-                borderRadius: 8
+                borderRadius: 8,
+                marginBottom: 15
               }}
               autoCapitalize="none"
               onChangeText={email => this.setState({ email })}
@@ -142,8 +240,36 @@ export default class LaunchScreen extends Component {
                 borderRadius: 8
               }}
             />
-            <Button title="Log In" onPress={() => this.login()} />
+            <Button
+              title="Log In"
+              onPress={() => this.login()}
+              style={{ margin: 20 }}
+            />
             <Button title="Sign Up" onPress={() => this.signUp()} />
+            <TouchableOpacity onPress={() => this.signUpFacebook()}>
+              <View
+                style={{
+                  padding: 10,
+                  width: Dimensions.get("window").width * 0.6,
+                  borderRadius: 20,
+                  overflow: "hidden",
+                  backgroundColor: "#4054B2",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 15
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "Avenir-Black",
+                    color: "white",
+                    fontSize: 16
+                  }}
+                >
+                  Log In With Facebook
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>}
         {this.state.signUp && <SignUp user={null} />}
         {this.state.userInfo &&

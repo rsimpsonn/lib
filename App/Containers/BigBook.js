@@ -134,14 +134,17 @@ export default class BigBook extends Component {
       .set({
         status: 1,
         dueAt: moment().add(7, "days").format("MMMM Do, h:mm a"),
-        book: this.props.book.key
+        book: this.props.book.key,
+        title: this.props.book.title,
+        min: moment().add(7, "days").format("MM/DD/YYYY")
       });
 
     this.props.userHistory.push({
       // add book to user's history locally
       status: 1,
       dueAt: moment().add(7, "days").format("MMMM Do, h:mm a"),
-      book: this.props.book.key
+      book: this.props.book.key,
+      title: this.props.book.title
     });
 
     this.props.book.status.splice(0, 0, {
@@ -173,7 +176,8 @@ export default class BigBook extends Component {
       .doc(`users/${this.props.user.uid}/history/${this.props.book.key}`)
       .update({
         status: 2,
-        dueAt: moment().add(1, "months").format("MMMM Do, h:mm a")
+        dueAt: moment().add(1, "months").format("MMMM Do, h:mm a"),
+        min: moment().add(1, "months").format("MM/DD/YYYY")
       });
 
     this.props.book.status.splice(0, 0, {

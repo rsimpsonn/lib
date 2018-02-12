@@ -14,13 +14,13 @@ export default class TabBar extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      selection: this.home
-    };
-
     this.search = 1;
     this.home = 2;
     this.profile = 3;
+
+    this.state = {
+      selection: this.home
+    };
 
     this.changeSelection = this.changeSelection.bind(this);
   }

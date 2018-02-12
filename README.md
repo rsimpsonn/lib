@@ -1,7 +1,7 @@
-#  wg
+#  Walt Grace Library
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 
-* Standard compliant React Native App Utilizing [Ignite](https://github.com/infinitered/ignite)
+* Standard compliant React Native Library App Utilizing [Ignite](https://github.com/infinitered/ignite) Template
 
 ## :arrow_up: How to Setup
 
@@ -18,9 +18,18 @@
 2. Run Build for either OS
   * for iOS
     * run `react-native run-ios`
-  * for Android
-    * Run Genymotion
-    * run `react-native run-android`
+
+## :arrow_forward: Libraries Used
+
+* [react](https://github.com/facebook/react) - A declarative, efficient, and flexible JavaScript library for building user interfaces.
+* [react-native](https://github.com/facebook/react-native) - A framework for building native apps with React.
+* [moment](https://github.com/moment/moment) - Parse, validate, manipulate, and display dates in javascript.
+* [react-native-firebase](https://github.com/invertase/react-native-firebase) - A well tested feature rich Firebase implementation for React Native
+* [prop-types](https://github.com/facebook/prop-types) - Runtime type checking for React props and similar objects
+* [styled-components](https://github.com/styled-components/styled-components) - Visual primitives for the component age. Use the best bits of ES6 and CSS to style your apps without stress
+* [react-native-tinder-swipe-cards](https://github.com/meteor-factory/react-native-tinder-swipe-cards) - Tinder-like swipe cards for your React Native app
+* [react-native-haptic](https://github.com/charlesvinette/react-native-haptic) - iOS 10 + haptic feedback for React Native applications
+* [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons) - Customizable Icons for React Native with support for NavBar/TabBar/ToolbarAndroid, image source and full styling.
 
 ## :no_entry_sign: Standard Compliant
 

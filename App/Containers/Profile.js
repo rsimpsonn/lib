@@ -29,7 +29,8 @@ export default class Profile extends Component {
       reservedBooks: this.getBooks(1), // Array of book information for books user has reserved
       checkedOutBooks: this.getBooks(2), // Array of book information for books user has checked out
       returnedBooks: this.getBooks(3), // Array of book information for books user has returned
-      bigBook: false // Records whether BigBook is enlarged
+      bigBook: false, // Records whether BigBook is enlarged
+      noBooks: true
     };
 
     this.logOut = this.logOut.bind(this);
@@ -48,11 +49,17 @@ export default class Profile extends Component {
       book =>
         this.props.books[this.props.books.findIndex(bk => bk.key === book.book)] // Match by books' keys
     );
+    if (books.length > 0) {
+      this.setState({
+        noBooks: false
+      });
+    }
     return books;
   }
 
   logOut() {
-    // Log user out
+    // Log user out and unsubscribe from notifications
+    firebase.messaging().unsubscribeFromTopic(this.props.user.uid);
     firebase.auth().signOut();
   }
 
@@ -94,6 +101,8 @@ export default class Profile extends Component {
                 Log Out
               </Text>
             </TouchableOpacity>
+            {this.state.noBooks &&
+              <StatusText>You haven&#39;t reserved any books!</StatusText>}
             {this.state.reservedBooks.length > 0 &&
               <StatusText>Your Reservations</StatusText>}
             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
