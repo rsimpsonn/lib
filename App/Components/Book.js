@@ -5,14 +5,32 @@ A button to display a cover and enlarge books on press.
 */
 
 import React, { Component } from "react";
-import { View, Image, Text, Dimensions, TouchableOpacity } from "react-native";
+import {
+  View,
+  Image,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+  Alert
+} from "react-native";
 import styled from "styled-components/native";
 import PropTypes from "prop-types";
 import ReactNativeHaptic from "react-native-haptic";
+import moment from "moment";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default class Book extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      history: this.props.book.status.sort(function(a, b) {
+        return (
+          moment(b.at, "MMMM Do, h:mm:ss a") -
+          moment(a.at, "MMMM Do, h:mm:ss a") // Use momentJS library to compare dates
+        );
+      })
+    };
 
     this.tapBook = this.tapBook.bind(this);
   }

@@ -12,7 +12,8 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
-  Animated
+  Animated,
+  Alert
 } from "react-native";
 import styled from "styled-components/native";
 import PropTypes from "prop-types";
@@ -20,6 +21,8 @@ import StarRating from "react-native-star-rating";
 import firebase from "react-native-firebase";
 import moment from "moment";
 import ReactNativeHaptic from "react-native-haptic";
+import FBSDK, { ShareDialog } from "react-native-fbsdk";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 import LibraryMap from "../Components/LibraryMap";
 import BookInfo from "../Components/BookInfo";
@@ -49,6 +52,13 @@ export default class BigBook extends Component {
       );
     });
     this.checkStatus();
+    const context = this;
+
+    const shareLinkContent = {
+      contentType: "link",
+      contentUrl: "google.com",
+      contentDescription: "Check out The Great Gatsby!"
+    };
   }
 
   checkStatus() {
@@ -89,11 +99,15 @@ export default class BigBook extends Component {
     } else if (lastStatus.status === "Checked Out") {
       // If last status is Checked Out
       if (moment() > moment(lastStatus.dueAt, "MMMM Do, h:mm a")) {
-        // If last Check Out is expired
-        this.setState({
-          available: true,
-          status: "Reserve"
-        });
+        // If last Check Out is overdue
+        if (lastStatus.by === this.props.user.uid) {
+          this.setState({
+            overdue: true,
+            available: false,
+            status: "Your book was due on",
+            ownedByThisUser: true
+          });
+        }
       } else {
         // If last Check Out is not expired
         if (lastStatus.by === this.props.user.uid) {
@@ -274,7 +288,7 @@ export default class BigBook extends Component {
               </Text>
               <StarRating
                 maxStars={5}
-                rating={this.props.book.rating}
+                rating={Number(this.props.book.rating)}
                 iconSet={"FontAwesome"}
                 starColor="#CFCFCF"
                 starSize={20}
@@ -283,12 +297,36 @@ export default class BigBook extends Component {
                 halfStar={"ios-star-half"}
                 iconSet={"Ionicons"}
                 starStyle={{ borderColor: "transparent", margin: 2 }}
-                buttonStyle={{ borderColor: "transparent", color: "#DCDCDC" }}
                 halfStarEnabled={true}
                 emptyStarColor="#DCDCDC"
               />
             </View>
           </View>
+          {this.state.overdue &&
+            <View
+              style={{
+                padding: 5,
+                backgroundColor: "#FF3372",
+                overflow: "hidden",
+                borderRadius: 20,
+                width: 100,
+                justifyContent: "center",
+                alignItems: "center",
+                position: "absolute",
+                top: 20,
+                right: 15
+              }}
+            >
+              <AuthorText
+                style={{
+                  color: "white",
+                  fontFamily: "Avenir-Black",
+                  fontSize: 15
+                }}
+              >
+                Overdue!
+              </AuthorText>
+            </View>}
           {this.state.available &&
             <TouchableOpacity
               onPress={() => this.reserveBook()}
@@ -379,7 +417,7 @@ export default class BigBook extends Component {
               </View>
             </View>}
           {this.state.ownedByThisUser &&
-            this.state.status === "Your book is due on" &&
+            this.state.status.indexOf("due") !== -1 &&
             <View>
               <AuthorText style={{ fontSize: 14, color: "#CFCFCF" }}>
                 {this.props.book.status[0].dueAt}

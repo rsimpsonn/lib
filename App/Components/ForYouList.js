@@ -45,9 +45,13 @@ export default class ForYouList extends Component {
           const goods = [];
           snapShot.forEach(doc => {
             const data = doc.data();
-            goods.push(data.tastes);
+            goods.push({ tastes: data.tastes, key: doc.id });
           });
-          rankedBooks.push({ book, score: this.score(goods) }); // Push each book into RankedBooks library with book information and recommendation score
+          rankedBooks.push({
+            book,
+            score: this.score(goods),
+            key: book.key
+          }); // Push each book into RankedBooks library with book information and recommendation score
           if (rankedBooks.length === this.props.books.length) {
             // Once all reviews are fetched
             this.setState({
@@ -79,7 +83,8 @@ export default class ForYouList extends Component {
       const isOne = this.props.userInfo.tastes.substring(i, i + 1) === "1"; // Find if current character in tastes is a 1 or 0
       var oneCount = 0; // Count to record number of 1's in reviews at current spot i
       var noCount = 0; // Count to record number of reviews that don't have a value at current spot i
-      goods.forEach(good => {
+      goods.forEach(data => {
+        const good = data.tastes;
         // Loop through reviews of book
         if (
           good.substring(i, i + 1) !== undefined &&
@@ -138,6 +143,7 @@ export default class ForYouList extends Component {
             biggerBook={this.props.biggerBook}
             book={this.state.rankedBooks[i].book}
             score={this.state.rankedBooks[i].score}
+            key={this.state.rankedBooks[i].key}
           />
         );
       }
@@ -205,20 +211,18 @@ export default class ForYouList extends Component {
                 Let&#39;s Go!
               </AuthorText>
             </View>
+            <Text
+              style={{
+                fontFamily: "Avenir-Heavy",
+                color: "white",
+                fontSize: 16,
+                marginTop: 15,
+                backgroundColor: "transparent"
+              }}
+            >
+              We&#39;ll tell you books we think you&#39;d like
+            </Text>
           </TouchableOpacity>
-          <Text
-            style={{
-              fontFamily: "Avenir-Heavy",
-              color: "white",
-              fontSize: 16,
-              position: "absolute",
-              bottom: 10,
-              left: 20,
-              backgroundColor: "transparent"
-            }}
-          >
-            And we&#39;ll tell you books we think you&#39;d like
-          </Text>
         </View>
       </View>
     );

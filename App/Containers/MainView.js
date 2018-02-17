@@ -187,7 +187,9 @@ export default class MainView extends Component {
             }}
           >
             {this.props.userInfo &&
-              <BigText>Hey, {this.props.userInfo.firstName}!</BigText>}
+              <BigText>
+                Hey, {this.props.userInfo.firstName}!
+              </BigText>}
             <MainText>
               Welcome to the library! {this.props.userInfo.pushToken}
             </MainText>
@@ -229,6 +231,7 @@ export default class MainView extends Component {
             books={this.state.books}
             user={this.props.user}
             userInfo={this.props.userInfo}
+            userHistory={this.props.userHistory}
           />}
         {this.state.profile &&
           <Profile
@@ -236,6 +239,7 @@ export default class MainView extends Component {
             userInfo={this.props.userInfo}
             userHistory={this.props.userHistory}
             books={this.state.books}
+            launchContext={this.props.context}
           />}
         {this.state.bigBook &&
           <ScrollView>
@@ -279,5 +283,6 @@ const BigText = styled.Text`
 MainView.propTypes = {
   user: PropTypes.object.isRequired, // Object containing user Firestore data
   userInfo: PropTypes.object.isRequired, // Object containing user's first name, last name, and tastes
-  userHistory: PropTypes.array.isRequired // Object containing user's book history
+  userHistory: PropTypes.array.isRequired, // Object containing user's book history
+  context: PropTypes.object.isRequired // Context of Launch screen
 };

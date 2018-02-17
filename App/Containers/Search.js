@@ -42,7 +42,14 @@ export default class Search extends Component {
         book =>
           book.title.toLowerCase().indexOf(this.state.text.toLowerCase()) !== -1 // Filter books using indexOf with titles
       )
-      .map(book => <Book book={book} bigBook={this.pickBook} />);
+      .map(book =>
+        <Book
+          book={book}
+          bigBook={this.pickBook}
+          user={this.props.user}
+          key={book.key}
+        />
+      );
   }
 
   pickBook(book) {
@@ -91,6 +98,7 @@ export default class Search extends Component {
             close={this.pickBook}
             user={this.props.user}
             userInfo={this.props.userInfo}
+            userHistory={this.props.userHistory}
           />}
       </View>
     );
@@ -106,5 +114,6 @@ const MainText = styled.Text`
 Search.propTypes = {
   books: PropTypes.array.isRequired, // Array of objects containing book information
   user: PropTypes.object.isRequired, // Object containing user's Firestore information
-  userInfo: PropTypes.object.isRequired // Object containing user's first name, last name, and tastes
+  userInfo: PropTypes.object.isRequired, // Object containing user's first name, last name, and tastes
+  userHistory: PropTypes.array.isRequired
 };

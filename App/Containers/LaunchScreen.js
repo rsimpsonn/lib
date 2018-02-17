@@ -22,6 +22,7 @@ import {
   Easing
 } from "react-native";
 import firebase from "react-native-firebase";
+import { AccessToken, LoginManager } from "react-native-fbsdk";
 
 import MainView from "./MainView";
 import SignUp from "./SignUp";
@@ -31,7 +32,7 @@ export default class LaunchScreen extends Component {
     super(props);
 
     this.state = {
-      signUp: false // Records whether the user has chosen to sign up
+      signUp: false // Records whether the user has chosen to sign up,
     };
     this.spinValue = new Animated.Value(0);
     this.spin = this.spin.bind(this);
@@ -42,10 +43,6 @@ export default class LaunchScreen extends Component {
 
   componentDidMount() {
     this.spin();
-    /*firebase.messaging().createLocalNotification({
-      body: "hey",
-      title: "i love you"
-    });*/
     this.handle = firebase.auth().onAuthStateChanged(user => {
       // Check if there's a user already logged in
       if (user !== null && user !== undefined) {
@@ -139,35 +136,95 @@ export default class LaunchScreen extends Component {
   }
 
   signUpFacebook = () => {
-    /*
-    return LoginManager.logInWithReadPermissions(["public_profile", "email"])
+    // Method to sign up users with Facebook
+    return LoginManager.logInWithReadPermissions(["public_profile", "email"]) // Get read permissions
       .then(result => {
         if (!result.isCancelled) {
           console.log(
             `Login success with permissions: ${result.grantedPermissions.toString()}`
           );
           // get the access token
-          return AccessToken.getCurrentAccessToken();
+          return AccessToken.getCurrentAccessToken(); // Need access token to create Firebase credentials
         }
       })
       .then(data => {
-        if (data) {
-          // create a new firebase credential with the token
-          const credential = firebase.auth.FacebookAuthProvider.credential(
-            data.accessToken
-          );
-          // login with credential
-          return firebase.auth().signInWithCredential(credential);
-        }
-      })
-      .then(currentUser => {
-        if (currentUser) {
-          console.info(JSON.stringify(currentUser.toJSON()));
-        }
-      })
-      .catch(error => {
-        console.log(`Login fail with error: ${error}`);
-      });*/
+        // Create a new firebase credential with the token
+        const credential = firebase.auth.FacebookAuthProvider.credential(
+          data.accessToken
+        );
+
+        // Login with credential
+        firebase
+          .auth()
+          .signInWithCredential(credential)
+          .then(currentUser => {
+            firebase
+              .firestore()
+              .doc(`users/${currentUser.uid}`) // Get userInfo from Firestore
+              .get()
+              .then(snapShot => {
+                const data = snapShot.data();
+                if (data.firstName) {
+                  // If there's already a database entry
+                  this.setState({ user: currentUser }); // Just continue
+                } else {
+                  // If not
+                  firebase.firestore().doc(`users/${currentUser.uid}`).set({
+                    // Make a new database entry with the user's display name
+                    firstName: currentUser.displayName.substring(
+                      0,
+                      currentUser.displayName.indexOf(" ")
+                    ), // First name is display name substring up until the space
+                    lastName: currentUser.displayName.substring(
+                      currentUser.displayName.indexOf(" ") + 1
+                    ), // Last name is display name substring past the space
+                    tastes: ""
+                  });
+                  this.setState({
+                    user: currentUser,
+                    userInfo: {
+                      firstName: currentUser.displayName.substring(
+                        0,
+                        currentUser.displayName.indexOf(" ")
+                      ),
+                      lastName: currentUser.displayName.substring(
+                        currentUser.displayName.indexOf(" ") + 1
+                      ),
+                      tastes: ""
+                    }
+                  });
+                }
+              })
+              .catch(() => {
+                firebase.firestore().doc(`users/${currentUser.uid}`).set({
+                  firstName: currentUser.displayName.substring(
+                    0,
+                    currentUser.displayName.indexOf(" ")
+                  ),
+                  lastName: currentUser.displayName.substring(
+                    currentUser.displayName.indexOf(" ") + 1
+                  ),
+                  tastes: ""
+                });
+                this.setState({
+                  user: currentUser,
+                  userInfo: {
+                    firstName: currentUser.displayName.substring(
+                      0,
+                      currentUser.displayName.indexOf(" ")
+                    ),
+                    lastName: currentUser.displayName.substring(
+                      currentUser.displayName.indexOf(" ") + 1
+                    ),
+                    tastes: ""
+                  }
+                });
+              });
+          })
+          .catch(error => {
+            Alert.alert("There was an error with the login!");
+          });
+      });
   };
 
   render() {
@@ -240,11 +297,30 @@ export default class LaunchScreen extends Component {
                 borderRadius: 8
               }}
             />
-            <Button
-              title="Log In"
-              onPress={() => this.login()}
-              style={{ margin: 20 }}
-            />
+            <TouchableOpacity onPress={() => this.login()}>
+              <View
+                style={{
+                  padding: 10,
+                  width: Dimensions.get("window").width * 0.6,
+                  borderRadius: 20,
+                  overflow: "hidden",
+                  backgroundColor: "#639BFF",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 15
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "Avenir-Black",
+                    color: "white",
+                    fontSize: 16
+                  }}
+                >
+                  Log In
+                </Text>
+              </View>
+            </TouchableOpacity>
             <Button title="Sign Up" onPress={() => this.signUp()} />
             <TouchableOpacity onPress={() => this.signUpFacebook()}>
               <View
@@ -270,14 +346,18 @@ export default class LaunchScreen extends Component {
                 </Text>
               </View>
             </TouchableOpacity>
+
           </View>}
         {this.state.signUp && <SignUp user={null} />}
         {this.state.userInfo &&
+          this.state.userHistory &&
+          this.state.user &&
           <MainView
             user={this.state.user}
             userInfo={this.state.userInfo}
             userHistory={this.state.userHistory}
             navigation={this.props.navigation}
+            context={this}
           />}
       </View>
     );

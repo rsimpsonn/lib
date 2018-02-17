@@ -66,7 +66,12 @@ export default class BigGenre extends Component {
                 }}
               >
                 {this.props.books.map(book =>
-                  <Book book={book} bigBook={this.biggerBook} />
+                  <Book
+                    book={book}
+                    bigBook={this.biggerBook}
+                    user={this.props.user}
+                    key={book.key}
+                  />
                 )}
               </View>
               <TouchableOpacity

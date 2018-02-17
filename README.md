@@ -5,18 +5,21 @@
 
 ## :arrow_up: How to Setup
 
-**Step 1:** git clone this repo:
+**Step 1:** git clone this repo: `git clone https://github.com/rsimpsonn/lib.git`
 
-**Step 2:** cd to the cloned repo:
+**Step 2:** cd to the cloned repo: `cd wg`
 
 **Step 3:** Install the Application with `yarn` or `npm i`
+
+**Step 4:** cd to ios directory: `cd ios`
+
+**Step 5:** Install pods (Requires CocoaPods): `pod install`
 
 
 ## :arrow_forward: How to Run App
 
-1. cd to the repo
-2. Run Build for either OS
-  * for iOS
+1. cd to the repo `cd wg`
+2. Run Build for iOS
     * run `react-native run-ios`
 
 ## :arrow_forward: Libraries Used

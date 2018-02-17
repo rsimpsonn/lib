@@ -49,7 +49,8 @@ export default class RecommendationsTest extends Component {
         array.push({
           title: data.title,
           description: data.description,
-          page: data.page
+          page: data.page,
+          key: doc.id
         });
       });
       this.setState({
@@ -139,7 +140,7 @@ export default class RecommendationsTest extends Component {
           <SwipeCards
             style={{ marginTop: 0 }}
             cards={this.state.recs.slice(this.letterCounter(this.state.tastes))}
-            renderCard={data => <RecommendCard rec={data} />}
+            renderCard={data => <RecommendCard rec={data} key={data.key} />}
             yupView={<Icon size={30} name="thumbs-up" color="#43352F" />}
             yupStyle={{ borderColor: "transparent" }}
             noView={<Icon size={30} name="thumbs-down" color="#43352F" />}
