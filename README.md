@@ -30,9 +30,22 @@
 * [react-native-firebase](https://github.com/invertase/react-native-firebase) - A well tested feature rich Firebase implementation for React Native
 * [prop-types](https://github.com/facebook/prop-types) - Runtime type checking for React props and similar objects
 * [styled-components](https://github.com/styled-components/styled-components) - Visual primitives for the component age. Use the best bits of ES6 and CSS to style your apps without stress
+* [react-native-fbsdk](https://github.com/facebook/react-native-fbsdk) - A React Native wrapper around the Facebook SDKs for Android and iOS. Provides access to Facebook login, sharing, graph requests, app events etc.
 * [react-native-tinder-swipe-cards](https://github.com/meteor-factory/react-native-tinder-swipe-cards) - Tinder-like swipe cards for your React Native app
 * [react-native-haptic](https://github.com/charlesvinette/react-native-haptic) - iOS 10 + haptic feedback for React Native applications
 * [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons) - Customizable Icons for React Native with support for NavBar/TabBar/ToolbarAndroid, image source and full styling.
+* [react-native-star-rating](https://github.com/djchie/react-native-star-rating) - A React Native component for generating and displaying interactive star ratings
+
+## :arrow_forward: Main Features
+
+* LaunchScreen - Manages app performance and keeps track of user's login status using a Firebase listener
+* MainView - Manages home screen of app and lists ForYouList and Feature slides - Contains Profile and Search screens
+* Search - Lets user search by book title, lists all books with keywords
+* Profile - Shows user all books they have reserved, checked out, and returned
+* BigBook - Enlarges book and gives user ability to reserve, check out, or return books
+* RecommendationsTest - Shows users excerpts of books in a swipe view and records user's reading preferences
+* ForYouList - Calculates recommendation percentages based on user's tastes and past users' reviews - Shows any books with above a 60% score to recommend to user
+* Notifications - A cloud function on Firebase is fired once a day at around 3:30PM PST checking if any user's books are overdue (note: code for the function is not included on repo)
 
 ## :no_entry_sign: Standard Compliant
 
@@ -50,30 +63,3 @@ If you have to bypass lint for a special commit that you will come back and clea
 **Understanding Linting Errors**
 
 The linting rules are from JS Standard and React-Standard.  [Regular JS errors can be found with descriptions here](http://eslint.org/docs/rules/), while [React errors and descriptions can be found here](https://github.com/yannickcr/eslint-plugin-react).
-
-## :closed_lock_with_key: Secrets
-
-This project uses [react-native-config](https://github.com/luggit/react-native-config) to expose config variables to your javascript code in React Native. You can store API keys
-and other sensitive information in a `.env` file:
-
-```
-API_URL=https://myapi.com
-GOOGLE_MAPS_API_KEY=abcdefgh
-```
-
-and access them from React Native like so:
-
-```
-import Secrets from 'react-native-config'
-
-Secrets.API_URL  // 'https://myapi.com'
-Secrets.GOOGLE_MAPS_API_KEY  // 'abcdefgh'
-```
-
-The `.env` file is ignored by git keeping those secrets out of your repo.
-
-### Get started:
-1. Copy .env.example to .env
-2. Add your config variables
-3. Follow instructions at [https://github.com/luggit/react-native-config#setup](https://github.com/luggit/react-native-config#setup)
-4. Done!
