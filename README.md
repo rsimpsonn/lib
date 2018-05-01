@@ -7,7 +7,7 @@
 
 **Step 1:** git clone this repo: `git clone https://github.com/rsimpsonn/lib.git`
 
-**Step 2:** cd to the cloned repo: `cd wg`
+**Step 2:** cd to the cloned repo: `cd lib-master`
 
 **Step 3:** Install the Application with `yarn` or `npm i`
 
@@ -18,7 +18,7 @@
 
 ## :arrow_forward: How to Run App
 
-1. cd to the repo `cd wg`
+1. cd to the repo `cd lib-master`
 2. Run Build for iOS
     * run `react-native run-ios`
 
