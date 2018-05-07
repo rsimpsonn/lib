@@ -21,6 +21,10 @@
 1. cd to the repo `cd lib-master`
 2. Run Build for iOS
     * run `react-native run-ios`
+3. Sign in
+    * Test account: 
+        Username: johnnyappleseed
+        Password: test
 
 ## :arrow_forward: Libraries Used
 
