@@ -5,9 +5,9 @@
 
 ## :arrow_up: How to Setup
 
-**Step 1:** git clone this repo: `git clone https://github.com/rsimpsonn/lib.git`
+**Step 1:** Download and unzip the application directory
 
-**Step 2:** cd to the cloned repo: `cd lib-master`
+**Step 4:** cd to the directory: `cd FBLA_MobileAppDevelopment_CA_SageHillSchool`
 
 **Step 3:** Install the Application with `yarn` or `npm i`
 
@@ -18,13 +18,13 @@
 
 ## :arrow_forward: How to Run App
 
-1. cd to the repo `cd lib-master`
+1. cd to the repo `cd FBLA_MobileAppDevelopment_CA_SageHillSchool`
 2. Run Build for iOS
     * run `react-native run-ios`
 3. Sign in
     * Test account: 
-        Username: johnnyappleseed
-        Password: test
+        Email: jane@gmail.com
+        Password: test123
 
 ## :arrow_forward: Libraries Used
 
