@@ -1,6 +1,8 @@
 #  Walt Grace Library
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 
+![Screenshots](waltgrace.png)
+
 * Standard compliant React Native Library App Utilizing [Ignite](https://github.com/infinitered/ignite) Template
 
 ## :arrow_up: How to Setup
