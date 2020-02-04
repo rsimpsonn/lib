@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "adm-zip": "^0.4.7",
+    "adm-zip": "^0.4.11",
     "plist": "^2.1.0",
     "xcode": "^1.0.0"
   }
