@@ -30,7 +30,7 @@
     "firebase-tools": "^3.17.4",
     "format-json": "^1.0.3",
     "identity-obj-proxy": "^3.0.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.21",
     "moment": "^2.20.1",
     "plist": "^2.1.0",
     "prop-types": "^15.6.0",
